@@ -25,23 +25,18 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     try {
-      const visit = await Visit.findOne({ ip });
+      const visit = await Visit.find();
 
       if (!visit) {
         return res.status(200).json({ clickCount: 0, requiresCaptcha: false });
       }
 
-      return res.status(200).json({
-        ip:visit.ip,
-        count: visit.count,
-        requiresCaptcha: visit.requiresCaptcha,
-      });
+      return res.status(200).json(visit);
     } catch (error) {
       console.error("❌ Error fetching visits:", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
-
   if (req.method === "POST") {
     try {
       console.log("📌 Received POST request from IP:", ip);
