@@ -4,7 +4,7 @@ import requestIp from "request-ip";
 
 export default async function handler(req, res) {
   await dbConnect(); // Ensure DB connection
-
+const fixedcount=20;
   // Extract IP Address
   let ip =
     requestIp.getClientIp(req) ||
@@ -30,7 +30,6 @@ export default async function handler(req, res) {
       if (!visit) {
         return res.status(200).json({ clickCount: 0, requiresCaptcha: false });
       }
-
       return res.status(200).json(visit);
     } catch (error) {
       console.error("❌ Error fetching visits:", error);
@@ -50,13 +49,22 @@ export default async function handler(req, res) {
       } else {
         visit.count += 1;
   
-        if (visit.count >= 10 && !captchaToken) {
+        if (visit.count === fixedcount/2 && !captchaToken) {
           visit.requiresCaptcha += 1;
           await visit.save();
           console.log("⚠️ CAPTCHA required for:", ip);
           return res.status(403).json({ 
             error: "CAPTCHA required!", 
             requiresCaptcha: true, 
+            clickCount: visit.count // Include clickCount to avoid empty response
+          });
+        }
+        if(visit.count>=fixedcount){
+         await visit.save();
+          return res.status(200).json({ 
+            message: "You have reached the maximum limit of clicks", 
+            requiresCaptcha: false, 
+            maxlimit:fixedcount,
             clickCount: visit.count // Include clickCount to avoid empty response
           });
         }
@@ -70,7 +78,7 @@ export default async function handler(req, res) {
       
       return res.status(200).json({
         clickCount: visit.count,
-        requiresCaptcha: visit.requiresCaptcha > 0,
+        requiresCaptcha: visit.count===fixedcount/2 ? true :false,
       });
   
     } catch (error) {
