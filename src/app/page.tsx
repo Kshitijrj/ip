@@ -1,13 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import serve from "./serve/page";
-import Popup from "reactjs-popup";
 import { useRouter } from "next/navigation";
 import ReCAPTCHA from "react-google-recaptcha";
-import { handleClick } from "./cleintcomp/handleClick.js";
-import { log } from "console";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,45 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Image from "next/image";
 
-const ads = [
-  {
-    title: "50% Off on T-shirts!",
-    image: "/download.jpg",
-    description: "Get the best deals on gadgets, only for today!",
-    link: "#",
-  },
-  {
-    title: "Buy 1 Get 1 Free - Fashion Sale",
-    image: "/downloads.jpg",
-    description: "Trendy clothes at unbeatable prices!",
-    link: "#",
-  },
-  {
-    title: "Exclusive Travel Discounts",
-    image: "/downloader.jpg",
-    description: "Plan your dream vacation at half the price!",
-    link: "#",
-  },
-  {
-    title: "Buy One get One free",
-    image: "/seconds.jpg",
-    description: "Luxury furniture at discounted prices!",
-    link: "#",
-  },
-  {
-    title: "25% Off on Electronics",
-    image: "/secondf.jpg",
-    description: "Luxury furniture at discounted prices!",
-    link: "#",
-  },
-  {
-    title: "50% Off on Iphone!",
-    image: "/secondt.jpg",
-    description: "Luxury furniture at discounted prices!",
-    link: "#",
-  },
-];
 
 export default function Home() {
   const [clickCount, setClickCount] = useState(0);
@@ -267,9 +224,11 @@ export default function Home() {
             onClick={(e) => handleLinkClick(e, "/userweb")}
             className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-xl transition duration-200 mx-4"
           >
-            <img
+            <Image
               src="/download.jpg"
               alt="50% Off on T-shirts!"
+              width={500}  // Required
+  height={224} // Required
               className="w-full h-56 object-cover rounded-md"
             />
             <h3 className="mt-4 text-lg font-bold">Buy Cool Anime T-shirt</h3>

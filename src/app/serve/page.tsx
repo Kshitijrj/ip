@@ -1,8 +1,6 @@
 'use client'
-import { use, useEffect, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import {  useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -21,7 +19,7 @@ import {
 export default function Serve() {
   const [data, setData] = useState([]);
 
-  const [captchaToken, setCaptchaToken] = useState("");
+  // const [captchaToken, setCaptchaToken] = useState("");
   const [aiResponse, setAiResponse] = useState("");
   const form = useForm();
   useEffect(() => {
