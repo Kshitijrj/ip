@@ -121,7 +121,7 @@ export default function Serve() {
 )}
 
       </div>
-      <div className="w-full md:w-1/2 bg-amber-600 p-6 rounded-lg shadow-md border-l-4 border-gray-300">
+      <div className="w-full md:w-1/2 bg-amber-200 p-6 rounded-lg shadow-md border-l-4 border-gray-300">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Enter Details</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
