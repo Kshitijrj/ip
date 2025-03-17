@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useRouter } from "next/navigation";
 import ReCAPTCHA from "react-google-recaptcha";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -16,8 +15,9 @@ import {
 import Image from "next/image";
 
 
+
 export default function Home() {
-  const [clickCount, setClickCount] = useState(0);
+  // const [clickCount, setClickCount] = useState(0);
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [redirectUrl, setRedirectUrl] = useState("");
@@ -25,17 +25,17 @@ export default function Home() {
   const [showAlert, setShowAlert] = useState(false);
 
   // Fetch user's visit count from API
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("/api/clicks"); // API to get visit count
-      const result = await response.json();
-      setClickCount(result.clickCount || 0);
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const response = await fetch("/api/clicks"); // API to get visit count
+     
+  //     // setClickCount(result.clickCount || 0);
+  //   };
+  //   fetchData();
+  // }, []);
 
   // Handle CAPTCHA Verification
-  const handleVerify = async (token) => {
+  const handleVerify = async (token:string|null) => {
     const res = await fetch("/api/verify-captcha", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -52,7 +52,7 @@ export default function Home() {
   };
 
   // Handle Click Event
-  const handleLinkClick = async (e, url) => {
+  const handleLinkClick = async (e: React.MouseEvent<HTMLDivElement>, url: string) => {
     e.preventDefault();
 
     try {
@@ -81,7 +81,7 @@ export default function Home() {
         }
         return;
       }
-      setClickCount(result.clickCount); // Update click count state
+      // setClickCount(result.clickCount); // Update click count state
 
       if (result.requiresCaptcha && !captchaVerified) {
         setShowCaptcha(true);
@@ -106,7 +106,7 @@ export default function Home() {
           <div className="p-5 bg-white rounded-lg shadow-lg">
             <h2 className="text-lg font-bold mb-3">Verify you are human</h2>
             <ReCAPTCHA
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
               onChange={handleVerify}
             />
           </div>
@@ -171,18 +171,18 @@ export default function Home() {
               reducing false impressions and click fraud.
             </p>
             <p className="mt-2 text-gray-700 dark:text-gray-300">
-              <strong>Key Features & Implementation:</strong>
+              <strong>Key Features &amp; Implementation:</strong>
             </p>
             <ul className="list-disc list-inside mt-2 text-gray-700 dark:text-gray-300">
               <li>
-                <strong>IP Address Tracking & Visit Counting:</strong> Stores
-                each visitor's IP address in MongoDB to track visit counts. Uses
+                <strong>IP Address Tracking &amp; Visit Counting:</strong> Stores
+                each visitor&apos;s IP address in MongoDB to track visit counts. Uses
                 Next.js API routes to fetch and update visit logs efficiently.
                 Implements rate limiting to prevent excessive visits from a
                 single IP.
               </li>
               <li>
-                <strong>Bot Detection & CAPTCHA Validation:</strong> If a user's
+                <strong>Bot Detection &amp; CAPTCHA Validation:</strong> If a user&apos;s
                 visit count exceeds a threshold (e.g., 10 visits), they are
                 required to complete a Google reCAPTCHA before proceeding.
                 Invisible CAPTCHA triggers when suspicious behavior is detected
@@ -197,7 +197,7 @@ export default function Home() {
                 detected.
               </li>
               <li>
-                <strong>Ad Protection & Revenue Security:</strong> Ensures only
+                <strong>Ad Protection &amp; Revenue Security:</strong> Ensures only
                 real users contribute to ad-based revenue. Reduces ad fraud
                 losses by detecting fake clicks and bot-generated traffic.
                 Provides an alert system for monitoring suspicious activities.
@@ -207,17 +207,17 @@ export default function Home() {
               <strong>Tech Stack Used:</strong>
             </p>
             <ul className="list-disc list-inside mt-2 text-gray-700 dark:text-gray-300">
-              <li>Next.js – Frontend & API routes</li>
-              <li>MongoDB – Storing IP addresses & visit logs</li>
-              <li>Google reCAPTCHA – Bot detection & verification</li>
+              <li>Next.js – Frontend &amp; API routes</li>
+              <li>MongoDB – Storing IP addresses &amp; visit logs</li>
+              <li>Google reCAPTCHA – Bot detection &amp; verification</li>
               <li>Tailwind CSS – UI design</li>
-              <li>TypeScript – Code reliability & scalability</li>
+              <li>TypeScript – Code reliability &amp; scalability</li>
             </ul>
             <a
               href="#"
               className="text-blue-600 dark:text-blue-400 mt-2 inline-block"
             >
-              Read more →
+              Read more &rarr;
             </a>
           </section>
           <div
@@ -233,10 +233,10 @@ export default function Home() {
             />
             <h3 className="mt-4 text-lg font-bold">Buy Cool Anime T-shirt</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">
-            "Don't start a fight if you can't end it" 
+            &quot;Don&apos;t start a fight if you can&apos;t end it&quot;
             </p>
             <a className="mt-3 inline-block text-blue-600 dark:text-blue-400 font-medium">
-              Learn More →
+              Learn More &rarr;
             </a>
           </div>
           </div>
@@ -265,7 +265,7 @@ export default function Home() {
 
           {/* Footer */}
           <footer className="text-center py-6 bg-gray-200 dark:bg-gray-800 mt-12">
-            <p>Wikipedia | Built with Next.js & Tailwind CSS</p>
+            <p>Wikipedia | Built with Next.js &amp; Tailwind CSS</p>
           </footer>
          
         </div>

@@ -2,6 +2,7 @@
 import {  useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+const formSchema = z.object({
+  ip: z.string().min(2, {
+    message: "IP must be at least 2 characters.",
+  }),
+});
 export default function Serve() {
-  const [data, setData] = useState([]);
+  interface Visit {
+    ip: string;
+    count: number;
+    requiresCaptcha: number;
+  }
+
+  const [data, setData] = useState<Visit[]>([]);
 
   // const [captchaToken, setCaptchaToken] = useState("");
   const [aiResponse, setAiResponse] = useState("");
-  const form = useForm();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+  });
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,11 +49,11 @@ export default function Serve() {
 
     fetchData();
   }, []);
-  const formSchema = z.object({
-    ip: z.string().min(2, {
-      message: "Ip must be at least 2 characters.",
-    }),
-  });
+  // const formSchema = z.object({
+  //   ip: z.string().min(2, {
+  //     message: "Ip must be at least 2 characters.",
+  //   }),
+  // });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
