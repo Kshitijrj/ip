@@ -4,7 +4,8 @@ import requestIp from "request-ip";
 
 export default async function handler(req, res) {
   await dbConnect(); // Ensure DB connection
-const fixedcount=20;
+  const fixedcount = 20;
+
   // Extract IP Address
   let ip =
     requestIp.getClientIp(req) ||
@@ -25,68 +26,79 @@ const fixedcount=20;
 
   if (req.method === "GET") {
     try {
-      const visit = await Visit.find();
+      const { date } = req.query;
+      let query = {};
 
-      if (!visit) {
-        return res.status(200).json({ clickCount: 0, requiresCaptcha: false });
+      if (date) {
+        const startOfDay = new Date(date);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+        query.createdAt = { $gte: startOfDay, $lte: endOfDay };
       }
+
+      const visit = await Visit.find(query);
+
+      if (!visit || visit.length === 0) {
+        return res.status(200).json({ message: "No data found for the given date." });
+      }
+
       return res.status(200).json(visit);
     } catch (error) {
       console.error("❌ Error fetching visits:", error);
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
   if (req.method === "POST") {
     try {
       console.log("📌 Received POST request from IP:", ip);
       console.log("📌 Request Body:", req.body);
-  
+
       const { captchaToken } = req.body; // Get CAPTCHA token from request
       let visit = await Visit.findOne({ ip });
-  
+
       if (!visit) {
         visit = new Visit({ ip, count: 1, requiresCaptcha: 0 });
       } else {
         visit.count += 1;
-  
-        if (visit.count === fixedcount/2 && !captchaToken) {
+
+        if (visit.count === fixedcount / 2 && !captchaToken) {
           visit.requiresCaptcha += 1;
           await visit.save();
           console.log("⚠️ CAPTCHA required for:", ip);
-          return res.status(403).json({ 
-            error: "CAPTCHA required!", 
-            requiresCaptcha: true, 
-            clickCount: visit.count // Include clickCount to avoid empty response
+          return res.status(403).json({
+            error: "CAPTCHA required!",
+            requiresCaptcha: true,
+            clickCount: visit.count
           });
         }
-        if(visit.count>=fixedcount){
-         await visit.save();
-          return res.status(200).json({ 
-            message: "You have reached the maximum limit of clicks", 
-            requiresCaptcha: false, 
-            maxlimit:fixedcount,
-            clickCount: visit.count // Include clickCount to avoid empty response
+
+        if (visit.count >= fixedcount) {
+          await visit.save();
+          return res.status(200).json({
+            message: "You have reached the maximum limit of clicks",
+            requiresCaptcha: false,
+            maxlimit: fixedcount,
+            clickCount: visit.count
           });
         }
-        
       }
-  
+
       visit.updatedAt = new Date(); // Update timestamp
       await visit.save();
-  
+
       console.log(`✅ Updated Count for ${ip}: ${visit.count}`);
-      
+
       return res.status(200).json({
         clickCount: visit.count,
-        requiresCaptcha: visit.count===fixedcount/2 ? true :false,
+        requiresCaptcha: visit.count === fixedcount / 2 ? true : false,
       });
-  
+
     } catch (error) {
       console.error("❌ Error tracking visit:", error);
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   }
-  
 
   return res.status(405).json({ message: "Method not allowed" });
 }
