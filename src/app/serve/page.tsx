@@ -33,6 +33,8 @@ export default function Serve() {
   const [data, setData] = useState<Visit[]>([]);
   const [aiResponse, setAiResponse] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const [fixedLimit, setFixedLimit] = useState('');
+  const [currentLimit, setCurrentLimit] = useState<number | null>(null);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -40,6 +42,7 @@ export default function Serve() {
 
   useEffect(() => {
     fetchData();
+    fetchCurrentLimit();
   }, []);
 
   const fetchData = async (date?: string) => {
@@ -54,6 +57,28 @@ export default function Serve() {
 
   const handleDateFilter = () => {
     fetchData(filterDate);
+  };
+
+  const updateLimit = async () => {
+    try {
+      const response = await fetch('/api/fixedlimit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newLimit: Number(fixedLimit) }),
+      });
+      const result = await response.json();
+      alert(`Limit updated to ${result.fixedcount}`);
+      setCurrentLimit(result.fixedcount);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update limit');
+    }
+  };
+
+  const fetchCurrentLimit = async () => {
+    const res = await fetch('/api/fixedlimit');
+    const data = await res.json();
+    setCurrentLimit(data.fixedcount);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -85,6 +110,23 @@ export default function Serve() {
         <Button onClick={handleDateFilter} className="bg-blue-600 text-white py-2 px-4 rounded-md">
           Filter by Date
         </Button>
+      </div>
+
+      {/* Click Limit Section */}
+      <div className="flex items-center gap-4 mt-4 px-4">
+        <input
+          type="number"
+          value={fixedLimit}
+          onChange={(e) => setFixedLimit(e.target.value)}
+          placeholder="Set new click limit"
+          className="border p-2 rounded-lg"
+        />
+        <Button onClick={updateLimit} className="bg-green-600 text-white py-2 px-4 rounded-md">
+          Update Limit
+        </Button>
+        {currentLimit !== null && (
+          <span className="ml-2 text-gray-700">Current Limit: {currentLimit}</span>
+        )}
       </div>
 
       <div className="w-full max-w-[1400px] mx-auto p-6 bg-gray-800 rounded-lg shadow-lg mt-10 flex flex-col md:flex-row justify-between items-start gap-10">

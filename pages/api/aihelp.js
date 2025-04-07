@@ -46,10 +46,8 @@ export default async function handler(req, res) {
         { role: "system", content: "You are an AI that analyzes user behavior based on visit data." },
         { role: "user", content: `Analyze the following user behavior data and provide insights:\n${userBehavior}` },
       ],
-      model: "gpt-4o",
-      temperature: 1,
-      max_tokens: 4096,
-      top_p: 1,
+      model: "gpt-4o-mini",
+      max_tokens: 512,
     });
 
     const analysis = response.choices?.[0]?.message?.content || "No analysis available.";
